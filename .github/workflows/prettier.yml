@@ -11,38 +11,29 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   run:
     name: Can the code be prettier? 🤔
     runs-on: ubuntu-latest
-    # workflow_dispatch always lets you select the branch ref, even though in this case we only ever want to run the action on `main` this we need an if check
     if: ${{ github.ref_name == 'main' }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           cache: npm
           node-version: lts/*
-      - run: npm ci --ignore-scripts --only-dev
-      - uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/prettier/.prettier-cache
-          key: prettier-${{ hashFiles('package-lock.json') }}-${{ hashFiles('.gitignore') }}
+
+      - run: npm ci
+
       - run: npm run format
-      - run: git restore .github/workflows
-      - uses: actions/create-github-app-token@v1
-        id: generate-token
-        with:
-          app-id: ${{ secrets.ECOSPARK_APP_ID }}
-          private-key: ${{ secrets.ECOSPARK_APP_PRIVATE_KEY }}
-      - uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
-        with:
-          body: I ran `npm run format` 🧑‍💻
-          branch: actions/prettier-if-needed
-          commit-message: "chore(prettier): 🤖 ✨"
-          labels: 🤖 bot
-          sign-commits: true
-          title: "chore(prettier): 🤖 ✨"
-          token: ${{ steps.generate-token.outputs.token }}
+
+      - name: Commit formatted files
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "chore: format code with Prettier" || echo "No changes to commit"
+          git push
