@@ -6,12 +6,12 @@ import Link from 'next/link'
 
 type Props = {
   params: {
-    slug: string;
-    projectID: string;
+    slug: string
+    projectID: string
   }
 }
 
-export default async function ProjectListingPage({ params }: Props) {
+export default async function ProjectListingPage({params}: Props) {
   const {data} = await sanityFetch({query: homePageQuery})
   if (!data) {
     return (

@@ -13,8 +13,8 @@ import {notFound} from 'next/navigation'
 
 type Props = {
   params: {
-    slug: string;
-    projectID: string; // Make sure this matches your folder name exactly, including case
+    slug: string
+    projectID: string // Make sure this matches your folder name exactly, including case
   }
 }
 
@@ -25,12 +25,12 @@ export async function generateStaticParams() {
     stega: false,
     perspective: 'published',
   })
-  
+
   // The data returned from this query likely only has the main slug
   // You need to transform it to include both parameters
   return data.map((item) => ({
     slug: item.slug,
-    projectId: item.projectId || item.slug // If you don't have a projectId, you could use the same slug or another identifier
+    projectId: item.projectId || item.slug, // If you don't have a projectId, you could use the same slug or another identifier
   }))
 }
 
