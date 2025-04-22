@@ -1,16 +1,58 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { client } from '@/lib/sanity'
-import { urlForImage } from '@/lib/sanity'
+import { urlForImage } from '@/lib/image' // Updated import path
 import { searchQuery } from '@/lib/queries'
 
-async function getSearchResults(searchTerm) {
-  // Add wildcards to make the search more flexible
-  const wildcard = `*${searchTerm}*`
-  return await client.fetch(searchQuery, { searchTerm: wildcard })
+// Define TypeScript interfaces for search results
+interface Video {
+  _id: string;
+  title: string;
+  slug: {
+    current: string;
+  };
+  excerpt?: string;
+  thumbnail?: any;
 }
 
-export default async function SearchResults({ searchTerm }) {
+interface Blog {
+  _id: string;
+  title: string;
+  slug: {
+    current: string;
+  };
+  excerpt?: string;
+  mainImage?: any;
+}
+
+interface Gallery {
+  _id: string;
+  title: string;
+  slug: {
+    current: string;
+  };
+  coverImage?: any;
+}
+
+interface SearchResult {
+  videos: Video[];
+  blogs: Blog[];
+  galleries: Gallery[];
+}
+
+async function getSearchResults(searchTerm: string): Promise<SearchResult> {
+  // Add wildcards to make the search more flexible
+  const wildcard = `*${searchTerm}*`
+  try {
+    return await client.fetch<SearchResult>(searchQuery, { searchTerm: wildcard })
+  } catch (error) {
+    console.error('Search error:', error)
+    // Return empty results in case of error
+    return { videos: [], blogs: [], galleries: [] }
+  }
+}
+
+export default async function SearchResults({ searchTerm }: { searchTerm: string }) {
   const { videos, blogs, galleries } = await getSearchResults(searchTerm)
   const totalResults = videos.length + blogs.length + galleries.length
   
@@ -40,7 +82,7 @@ export default async function SearchResults({ searchTerm }) {
                   <div className="relative aspect-video">
                     {video.thumbnail ? (
                       <Image
-                        src={urlForImage(video.thumbnail) ? urlForImage(video.thumbnail).url() : '/placeholder.jpg'}
+                        src={video.thumbnail ? urlForImage(video.thumbnail).url() : '/placeholder.jpg'}
                         alt={video.title}
                         fill
                         className="object-cover"
@@ -80,7 +122,7 @@ export default async function SearchResults({ searchTerm }) {
                   <div className="relative h-48">
                     {blog.mainImage ? (
                       <Image
-                        src={urlForImage(blog.mainImage) ? urlForImage(blog.mainImage).url() : '/placeholder.jpg'}
+                        src={blog.mainImage ? urlForImage(blog.mainImage).url() : '/placeholder.jpg'}
                         alt={blog.title}
                         fill
                         className="object-cover"
@@ -121,7 +163,7 @@ export default async function SearchResults({ searchTerm }) {
               >
                 {gallery.coverImage ? (
                   <Image
-                    src={urlForImage(gallery.coverImage) ? urlForImage(gallery.coverImage).url() : '/placeholder.jpg'}
+                    src={gallery.coverImage ? urlForImage(gallery.coverImage).url() : '/placeholder.jpg'}
                     alt={gallery.title}
                     fill
                     className="object-cover group-hover:scale-110 transition duration-300"

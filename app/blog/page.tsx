@@ -2,16 +2,38 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Layout from '../components/Layout'
 import { client } from '@/lib/sanity'
-import { urlForImage } from '@/lib/sanity'
+import { urlForImage } from '@/lib/image' // Updated import path
 import { allBlogPostsQuery } from '@/lib/queries'
 
-async function getBlogPosts() {
+// Define blog post interface
+interface BlogPost {
+  _id: string;
+  title?: string;
+  slug?: {
+    current: string;
+  };
+  excerpt?: string;
+  mainImage?: any;
+  thumbnail?: any;
+  publishedAt?: string;
+  categories?: Array<{
+    title: string;
+  }>;
+}
+
+async function getBlogPosts(): Promise<BlogPost[]> {
   return await client.fetch(allBlogPostsQuery)
+}
+
+// Helper function to safely get image URL
+function getImageUrl(source: any, fallback: string = '/placeholder.jpg'): string {
+  const imageBuilder = urlForImage(source)
+  return imageBuilder ? imageBuilder.url() : fallback
 }
 
 export default async function BlogPage() {
   const blogs = await getBlogPosts()
-
+  
   return (
     <Layout>
       <div className="container mx-auto py-12 px-4">
@@ -22,12 +44,17 @@ export default async function BlogPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {blogs.map((blog) => (
             <div key={blog._id} className="bg-gray-900 rounded-lg overflow-hidden group hover:bg-gray-800 transition">
-              <Link href={`/blog/${blog.slug.current}`}>
+              <Link href={`/blog/${blog.slug?.current || ''}`}>
                 <div className="relative h-48">
-                  {blog.mainImage ? (
+                  {blog.mainImage || blog.thumbnail ? (
                     <Image
-                      src={urlForImage(blog.mainImage).url()}
-                      alt={blog.title}
+                      src={blog.thumbnail 
+                        ? getImageUrl(blog.thumbnail) 
+                        : blog.mainImage 
+                          ? getImageUrl(blog.mainImage) 
+                          : '/placeholder.jpg'
+                      }
+                      alt={blog.title || 'Blog post'}
                       fill
                       className="object-cover"
                     />
@@ -41,15 +68,15 @@ export default async function BlogPage() {
                 </div>
               </Link>
               <div className="p-6">
-                <Link href={`/blog/${blog.slug.current}`} className="block">
-                  <h3 className="text-xl font-bold mb-2">{blog.title}</h3>
+                <Link href={`/blog/${blog.slug?.current || ''}`} className="block">
+                  <h3 className="text-xl font-bold mb-2">{blog.title || 'Untitled'}</h3>
                 </Link>
                 {blog.excerpt && (
                   <p className="text-gray-400 mb-4 line-clamp-3">{blog.excerpt}</p>
                 )}
                 <div className="flex justify-between items-center">
                   <Link 
-                    href={`/blog/${blog.slug.current}`} 
+                    href={`/blog/${blog.slug?.current || ''}`} 
                     className="text-red-500 hover:text-red-400 font-medium"
                   >
                     Read More

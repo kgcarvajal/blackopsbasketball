@@ -3,8 +3,26 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { urlForImage } from '@/lib/sanity'
+import { SanityImageSource } from '@sanity/image-url/lib/types/types'
 
-export default function GalleryViewer({ images }) {
+// Define interface for gallery images
+interface GalleryImage {
+  _key?: string;
+  asset?: {
+    _id: string;
+    [key: string]: any;
+  };
+  alt?: string;
+  caption?: string;
+  [key: string]: any;
+}
+
+// Define props interface
+interface GalleryViewerProps {
+  images?: GalleryImage[] | null;
+}
+
+export default function GalleryViewer({ images }: GalleryViewerProps) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
 
   // Add data validation
@@ -36,6 +54,12 @@ export default function GalleryViewer({ images }) {
     setSelectedImage(newIndex)
   }
 
+  // Helper function to safely get image URL
+  const getImageUrl = (image: GalleryImage): string => {
+    const imageBuilder = urlForImage(image?.asset)
+    return imageBuilder ? imageBuilder.url() : '/placeholder.jpg'
+  }
+
   return (
     <>
       {/* Gallery Grid */}
@@ -48,7 +72,7 @@ export default function GalleryViewer({ images }) {
           >
             {image?.asset ? (
               <Image
-                src={urlForImage(image).url()}
+                src={getImageUrl(image)}
                 alt={image.alt || `Gallery image ${index + 1}`}
                 fill
                 className="object-cover hover:opacity-75 transition"
@@ -88,7 +112,7 @@ export default function GalleryViewer({ images }) {
           
           <div className="relative w-full h-[80vh] max-w-5xl" onClick={(e) => e.stopPropagation()}>
             <Image
-              src={urlForImage(images[selectedImage]).url()}
+              src={getImageUrl(images[selectedImage])}
               alt={images[selectedImage].alt || 'Gallery image'}
               fill
               className="object-contain"

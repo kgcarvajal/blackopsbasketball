@@ -1,156 +1,215 @@
-import { groq } from 'next-sanity'
+import { groq } from 'next-sanity';
+import { client } from './sanity';
 
-// Query for all videos
-export const allVideosQuery = groq`*[_type == "videoPost"] | order(publishedAt desc) {
-  _id,
-  title,
-  slug,
-  excerpt,
-  thumbnail,
-  publishedAt,
-  "categories": categories[]->title
-}`
+// Type definitions
+interface SearchParams {
+  searchTerm: string;
+}
 
-// Query for a single video by slug
-export const videoBySlugQuery = groq`*[_type == "videoPost" && slug.current == $slug][0] {
-  _id,
-  title,
-  slug,
-  featuredVideo,
-  videoUrl,
-  thumbnail,
-  excerpt,
-  body,
-  publishedAt,
-  "categories": categories[]->title,
-  "author": author->{
-    name,
-    slug,
-    image
-  },
-  "relatedVideos": *[_type == "videoPost" && slug.current != $slug && count(categories[@._ref in ^.categories[]._ref]) > 0] | order(publishedAt desc)[0...3] {
+// Blog queries
+export const allBlogPostsQuery = groq`
+  *[_type == "post"] | order(publishedAt desc) {
     _id,
     title,
     slug,
-    thumbnail,
     excerpt,
-    publishedAt
+    mainImage,
+    thumbnail,
+    publishedAt,
+    categories[]->{ title }
   }
-}`
+`;
 
-// Query for all blog posts
-export const allBlogPostsQuery = groq`*[_type == "blogPost"] | order(publishedAt desc) {
-  _id,
-  title,
-  slug,
-  excerpt,
-  mainImage,
-  publishedAt,
-  "categories": categories[]->title
-}`
-
-// Query for a single blog post by slug
-export const blogPostBySlugQuery = groq`*[_type == "blogPost" && slug.current == $slug][0] {
-  _id,
-  title,
-  slug,
-  mainImage,
-  excerpt,
-  body,
-  publishedAt,
-  "categories": categories[]->title,
-  "author": author->{
-    name,
-    slug,
-    image,
-    bio
-  },
-  "relatedPosts": *[_type == "blogPost" && slug.current != $slug && count(categories[@._ref in ^.categories[]._ref]) > 0] | order(publishedAt desc)[0...3] {
+export const blogPostBySlugQuery = groq`
+  *[_type == "post" && slug.current == $slug][0] {
     _id,
     title,
     slug,
     mainImage,
-    excerpt,
+    body,
+    publishedAt,
+    categories[]->{ title },
+    author->{
+      name,
+      image
+    }
+  }
+`;
+
+/**
+ * Fetch all posts with pagination
+ */
+export const getAllPosts = async (limit = 10, skip = 0) => {
+  return client.fetch(
+    groq`*[_type == "post"] | order(publishedAt desc) [${skip}...${skip + limit}] {
+      _id,
+      title,
+      slug,
+      excerpt,
+      mainImage,
+      publishedAt,
+      "categories": categories[]->title
+    }`
+  );
+};
+
+/**
+ * Fetch a single post by slug
+ */
+export const getPostBySlug = async (slug: string) => {
+  return client.fetch(
+    groq`*[_type == "post" && slug.current == $slug][0]{
+      _id,
+      title,
+      slug,
+      body,
+      mainImage,
+      publishedAt,
+      "author": author->{name, image},
+      "categories": categories[]->title
+    }`,
+    { slug }
+  );
+};
+
+// Gallery queries
+export const allGalleriesQuery = groq`
+  *[_type == "gallery"] | order(publishedAt desc) {
+    _id,
+    title,
+    slug,
+    description,
+    mainImage,
+    thumbnail,
     publishedAt
   }
-}`
+`;
 
-// Query for all galleries
-export const allGalleriesQuery = groq`*[_type == "photoGallery"] | order(publishedAt desc) {
-  _id,
-  title,
-  slug,
-  description,
-  coverImage,
-  publishedAt,
-  "imageCount": count(images)
-}`
-
-// Query for a single gallery by slug
-export const galleryBySlugQuery = groq`*[_type == "photoGallery" && slug.current == $slug][0] {
-  _id,
-  title,
-  slug,
-  description,
-  coverImage,
-  publishedAt,
-  images[] {
-    asset->,
-    caption,
-    alt
-  },
-  "categories": categories[]->title
-}`
-
-// Query for homepage data
-export const homePageQuery = groq`{
-    "featuredHero": *[_type == "homepage"][0].featuredHero-> {
-      _type,
-      title,
-      "slug": slug.current,
-      excerpt,
-      "thumbnail": select(
-        _type == "videoPost" => thumbnail,
-        _type == "blogPost" => mainImage,
-        _type == "photoGallery" => coverImage
-      )
+export const galleryBySlugQuery = groq`
+  *[_type == "gallery" && slug.current == $slug][0] {
+    _id,
+    title,
+    slug,
+    description,
+    mainImage,
+    images[] {
+      _key,
+      asset->{
+        _id,
+        url,
+        metadata {
+          dimensions
+        }
+      },
+      caption,
+      alt
     },
-    "featuredContent": *[_type == "homepage"][0].featuredContent[]-> {
-      _type,
+    publishedAt
+  }
+`;
+
+/**
+ * Fetch gallery images
+ */
+export const getGalleryImages = async (limit = 20, skip = 0) => {
+  return client.fetch(
+    groq`*[_type == "galleryImage"] | order(publishedAt desc) [${skip}...${skip + limit}] {
+      _id,
       title,
-      "slug": slug.current,
-      excerpt,
-      "thumbnail": select(
-        _type == "videoPost" => thumbnail,
-        _type == "blogPost" => mainImage,
-        _type == "photoGallery" => coverImage
-      )
-    },
-    "featuredVideos": *[_type == "videoPost" && featured == true] | order(publishedAt desc)[0...4],
-    "latestBlogs": *[_type == "blogPost"] | order(publishedAt desc)[0...3],
-    "photoGalleries": *[_type == "photoGallery"] | order(publishedAt desc)[0...6],
-    "siteSettings": *[_type == "siteSettings"][0]
-  }`
+      image,
+      publishedAt
+    }`
+  );
+};
 
-  // Query for about page
-export const aboutPageQuery = groq`*[_type == "author" && name == "Chris Brickley"][0]{
-    name,
-    bio,
-    image
-  }`
+// Video queries
+export const allVideosQuery = groq`
+  *[_type == "video"] | order(publishedAt desc) {
+    _id,
+    title,
+    slug,
+    description,
+    excerpt,
+    videoUrl,
+    thumbnail,
+    duration,
+    publishedAt,
+    categories[]->{ title }
+  }
+`;
 
- // Search query to find content across all types
-export const searchQuery = groq`{
-    "videos": *[_type == "videoPost" && (title match $searchTerm || excerpt match $searchTerm)] {
+export const videoBySlugQuery = groq`
+  *[_type == "video" && slug.current == $slug][0] {
+    _id,
+    title,
+    slug,
+    description,
+    videoUrl,
+    thumbnail,
+    duration,
+    publishedAt,
+    categories[]->{ title },
+    relatedVideos[]->{ 
+      _id,
+      title,
+      slug,
+      thumbnail,
+      duration
+    }
+  }
+`;
+
+/**
+ * Fetch all videos with pagination
+ */
+export const getAllVideos = async (limit = 10, skip = 0) => {
+  return client.fetch(
+    groq`*[_type == "video"] | order(publishedAt desc) [${skip}...${skip + limit}] {
+      _id,
+      title,
+      slug,
+      description,
+      videoUrl,
+      thumbnailImage,
+      publishedAt,
+      "categories": categories[]->title
+    }`
+  );
+};
+
+/**
+ * Fetch a single video by slug
+ */
+export const getVideoBySlug = async (slug: string) => {
+  return client.fetch(
+    groq`*[_type == "video" && slug.current == $slug][0]{
+      _id,
+      title,
+      slug,
+      description,
+      videoUrl,
+      thumbnailImage,
+      publishedAt,
+      "relatedVideos": relatedVideos[]->
+    }`,
+    { slug }
+  );
+};
+
+// Search query
+export const searchQuery = groq`
+  {
+    "videos": *[_type == "video" && (title match $searchTerm || description match $searchTerm)] {
       _id,
       _type,
       title,
       slug,
       excerpt,
       thumbnail,
+      duration,
       publishedAt
     },
-    "blogs": *[_type == "blogPost" && (title match $searchTerm || excerpt match $searchTerm)] {
+    "blogs": *[_type == "post" && (title match $searchTerm || excerpt match $searchTerm)] {
       _id,
       _type,
       title,
@@ -159,13 +218,22 @@ export const searchQuery = groq`{
       mainImage,
       publishedAt
     },
-    "galleries": *[_type == "photoGallery" && (title match $searchTerm || description match $searchTerm)] {
+    "galleries": *[_type == "gallery" && (title match $searchTerm || description match $searchTerm)] {
       _id,
       _type,
       title,
       slug,
       description,
-      coverImage,
+      thumbnail,
       publishedAt
     }
-  }`
+  }
+`;
+
+/**
+ * Search for content matching a query string
+ */
+export const performSearch = async (searchTerm: string) => {
+  const params: { searchTerm: string } = { searchTerm: `*${searchTerm}*` };
+  return client.fetch(searchQuery, params);
+};

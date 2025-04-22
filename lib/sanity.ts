@@ -1,59 +1,40 @@
-import { createClient } from 'next-sanity'
-import imageUrlBuilder from '@sanity/image-url'
+/**
+ * Sanity configuration module
+ */
+import { createClient } from 'next-sanity';
+import imageUrlBuilder from '@sanity/image-url';
+import { SanityImageSource } from '@sanity/image-url/lib/types/types';
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
-const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-04-01'
+// Environment variables
+export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '';
+export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
+export const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2023-05-03';
 
+// Create a client for fetching data
 export const client = createClient({
   projectId,
   dataset,
   apiVersion,
   useCdn: process.env.NODE_ENV === 'production',
-})
+});
 
-// Helper function for generating image URLs
-const builder = imageUrlBuilder(client)
+// Set up the image URL builder
+const builder = imageUrlBuilder({
+  projectId,
+  dataset,
+});
 
-export function urlForImage(source: any) {
-  return builder.image(source)
+/**
+ * Generate image URLs from Sanity image records
+ * @param source The Sanity image source to generate a URL for
+ * @returns An image URL builder for the provided source, or null if no source
+ */
+export function urlForImage(source: SanityImageSource | null | undefined) {
+  if (!source) {
+    return null;
+  }
+  return builder.image(source);
 }
 
-// Search queries
-export async function searchVideos(query: string) {
-  return client.fetch(`
-    *[_type == "video" && (title match "*${query}*" || description match "*${query}*" || categories[]->title match "*${query}*")] {
-      _id,
-      title,
-      slug,
-      "excerpt": coalesce(excerpt, description)[0..150] + "...",
-      mainImage,
-      publishedAt
-    } | order(publishedAt desc)
-  `)
-}
-
-export async function searchPosts(query: string) {
-  return client.fetch(`
-    *[_type == "post" && (title match "*${query}*" || body match "*${query}*" || categories[]->title match "*${query}*")] {
-      _id,
-      title,
-      slug,
-      "excerpt": coalesce(excerpt, body[0].children[0].text)[0..150] + "...",
-      mainImage,
-      publishedAt
-    } | order(publishedAt desc)
-  `)
-}
-
-export async function searchGallery(query: string) {
-  return client.fetch(`
-    *[_type == "gallery" && (title match "*${query}*" || description match "*${query}*")] {
-      _id,
-      title,
-      slug,
-      mainImage,
-      publishedAt
-    } | order(publishedAt desc)
-  `)
-}
+// Export types for better type safety
+export type SanityClient = typeof client;

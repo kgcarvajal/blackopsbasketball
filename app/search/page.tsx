@@ -3,13 +3,18 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Layout from '../components/Layout'
 import { client } from '@/lib/sanity'
-import { urlForImage } from '@/lib/sanity'
+import { urlForImage } from '@/lib/image' // Updated import path
 import { searchQuery } from '@/lib/queries'
 import SearchResults from './searchresults'
 import SearchForm from '../components/searchform'
 
-// This is the search page component
-export default function SearchPage({ searchParams }) {
+// Define types for the search params
+type SearchParams = {
+  q?: string;
+}
+
+// Updated search page component with TypeScript typing
+export default function SearchPage({ searchParams }: { searchParams: SearchParams }) {
   const searchTerm = searchParams.q || ''
   
   return (

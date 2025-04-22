@@ -2,16 +2,35 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Layout from '../components/Layout'
 import { client } from '@/lib/sanity'
-import { urlForImage } from '@/lib/sanity'
+import { urlForImage } from '@/lib/image' // Updated import path
 import { allGalleriesQuery } from '@/lib/queries'
 
-async function getGalleries() {
+// Define gallery interface
+interface Gallery {
+  _id: string;
+  title: string;
+  slug: {
+    current: string;
+  };
+  description?: string;
+  coverImage?: any;
+  mainImage?: any;
+  imageCount?: number;
+}
+
+async function getGalleries(): Promise<Gallery[]> {
   return await client.fetch(allGalleriesQuery)
+}
+
+// Helper function to safely get image URL
+function getImageUrl(source: any, fallback: string = '/placeholder-gallery.jpg'): string {
+  const imageBuilder = urlForImage(source)
+  return imageBuilder ? imageBuilder.url() : fallback
 }
 
 export default async function GalleryPage() {
   const galleries = await getGalleries()
-
+  
   return (
     <Layout>
       <div className="container mx-auto py-12 px-4">
@@ -28,8 +47,15 @@ export default async function GalleryPage() {
             >
               {gallery.coverImage ? (
                 <Image
-                  src={urlForImage(gallery.coverImage).url()}
-                  alt={gallery.title}
+                  src={getImageUrl(gallery.coverImage)}
+                  alt={gallery.title || 'Gallery image'}
+                  fill
+                  className="object-cover group-hover:scale-110 transition duration-300"
+                />
+              ) : gallery.mainImage ? (
+                <Image
+                  src={getImageUrl(gallery.mainImage)}
+                  alt={gallery.title || 'Gallery image'}
                   fill
                   className="object-cover group-hover:scale-110 transition duration-300"
                 />
@@ -42,7 +68,7 @@ export default async function GalleryPage() {
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-70"></div>
               <div className="absolute bottom-0 left-0 p-6">
-                <h3 className="text-xl font-bold text-white mb-2">{gallery.title}</h3>
+                <h3 className="text-xl font-bold text-white mb-2">{gallery.title || 'Untitled Gallery'}</h3>
                 {gallery.description && (
                   <p className="text-gray-300 text-sm mb-2">{gallery.description}</p>
                 )}

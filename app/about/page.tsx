@@ -31,7 +31,7 @@ export default async function AboutPage() {
     'Worked with over 100 NBA players',
     'Trained 2022 NBA Champions',
     'Featured on ESPN, Bleacher Report, and Slam Magazine',
-    'Over 1M followers on social media',
+    'Over 3.5M followers on Instagram',
     'Created the BlackOps Basketball training program',
     'Official skills coach for 20+ All-Stars'
   ]
