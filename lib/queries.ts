@@ -74,19 +74,19 @@ export const getPostBySlug = async (slug: string) => {
 
 // Gallery queries
 export const allGalleriesQuery = groq`
-  *[_type == "gallery"] | order(publishedAt desc) {
+  *[_type == "photoGallery"] | order(publishedAt desc) {
     _id,
     title,
     slug,
     description,
     mainImage,
-    thumbnail,
+    coverImage,
     publishedAt
   }
 `;
 
 export const galleryBySlugQuery = groq`
-  *[_type == "gallery" && slug.current == $slug][0] {
+  *[_type == "photoGallery" && slug.current == $slug][0] {
     _id,
     title,
     slug,
@@ -218,13 +218,13 @@ export const searchQuery = groq`
       mainImage,
       publishedAt
     },
-    "galleries": *[_type == "gallery" && (title match $searchTerm || description match $searchTerm)] {
+    "galleries": *[_type == "photoGallery" && (title match $searchTerm || description match $searchTerm)] {
       _id,
       _type,
       title,
       slug,
       description,
-      thumbnail,
+      coverImage,
       publishedAt
     }
   }
