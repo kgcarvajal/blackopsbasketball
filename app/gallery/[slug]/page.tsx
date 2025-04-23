@@ -16,7 +16,7 @@ export default async function GalleryDetailPage({ params }: { params: { slug: st
       <Layout>
         <div className="container mx-auto py-12 px-4">
           <h1 className="text-3xl font-bold mb-4">Gallery Not Found</h1>
-          <p className="text-gray-400">The gallery you're looking for doesn't exist or has been removed.</p>
+          <p className="text-gray-400">The gallery you&apos;re looking for doesn&apos;t exist or has been removed.</p>
           <Link href="/gallery" className="mt-6 inline-block bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-md font-medium transition">
             Back to Gallery
           </Link>
@@ -57,7 +57,7 @@ export default async function GalleryDetailPage({ params }: { params: { slug: st
           <GalleryViewer images={gallery.images} />
         ) : (
           <div className="text-center text-gray-400 py-8">
-            <p>This gallery doesn't have any images yet.</p>
+            <p>This gallery doesn&apos;t have any images yet.</p>
           </div>
         )}
       </div>

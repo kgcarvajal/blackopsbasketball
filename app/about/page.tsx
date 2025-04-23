@@ -43,7 +43,7 @@ export default async function AboutPage() {
       image: "/images/testimonial1.jpg"
     },
     {
-      quote: "The best skills trainer in the game. Period. Brickley's workouts are like nothing else.",
+      quote: "The best skills trainer in the game. Period. Brickley&apos;s workouts are like nothing else.",
       author: "NBA MVP",
       image: "/images/testimonial2.jpg"
     },
@@ -76,7 +76,7 @@ export default async function AboutPage() {
                 <p className="text-gray-400 mb-8">
                   With over a decade of experience working with the best basketball players in the world, 
                   Chris Brickley has established himself as one of the most sought-after trainers in the NBA. 
-                  His innovative techniques and relentless work ethic have helped transform countless players' games.
+                  His innovative techniques and relentless work ethic have helped transform countless players&apos; games.
                 </p>
               )}
               
@@ -181,7 +181,7 @@ export default async function AboutPage() {
         <div className="container mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Take Your Game to the Next Level?</h2>
           <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-            Whether you're an aspiring player or a professional athlete, I can help you reach your full potential.
+            Whether you&apos;re an aspiring player or a professional athlete, I can help you reach your full potential.
           </p>
           <Link href="/contact" className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-md font-medium transition inline-block">
             Get in Touch

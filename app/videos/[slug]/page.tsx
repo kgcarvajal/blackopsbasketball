@@ -39,7 +39,7 @@ export default async function VideoPage({ params }: { params: { slug: string } }
       <Layout>
         <div className="container mx-auto py-12 px-4">
           <h1 className="text-3xl font-bold mb-4">Video Not Found</h1>
-          <p className="text-gray-400">The video you're looking for doesn't exist or has been removed.</p>
+          <p className="text-gray-400">The video you&apos;re looking for doesn&apos;t exist or has been removed.</p>
           <Link href="/videos" className="mt-6 inline-block bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-md font-medium transition">
             Back to Videos
           </Link>

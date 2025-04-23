@@ -19,7 +19,7 @@
     "@sanity/demo": "2.0.0",
     "@sanity/icons": "^3.7.0",
     "@sanity/image-url": "^1.1.0",
-    "@sanity/ui": "2.15.12",
+    "@sanity/ui": "^2.15.13",
     "@sanity/util": "3.82.0",
     "@sanity/vision": "^3.83.0",
     "@tailwindcss/typography": "0.5.16",

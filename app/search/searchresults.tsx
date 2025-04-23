@@ -59,7 +59,7 @@ export default async function SearchResults({ searchTerm }: { searchTerm: string
   if (totalResults === 0) {
     return (
       <div className="text-center text-gray-400 py-16">
-        <p className="mb-4">No results found for "{searchTerm}"</p>
+        <p className="mb-4">No results found for &quot;{searchTerm}&quot;</p>
         <p>Try a different search term or browse our content sections.</p>
       </div>
     )
@@ -68,7 +68,7 @@ export default async function SearchResults({ searchTerm }: { searchTerm: string
   return (
     <div>
       <p className="mb-8 text-gray-400">
-        Found {totalResults} result{totalResults !== 1 ? 's' : ''} for "{searchTerm}"
+        Found {totalResults} result{totalResults !== 1 ? 's' : ''} for &quot;{searchTerm}&quot;
       </p>
       
       {/* Videos Results */}
