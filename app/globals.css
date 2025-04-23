@@ -5,7 +5,7 @@
 :root {
   --foreground-rgb: 255, 255, 255;
   --background-rgb: 0, 0, 0;
-  --primary-color: 220, 38, 38;  /* Red-600 */
+  --primary-color: 220, 38, 38; /* Red-600 */
 }
 
 body {
@@ -14,7 +14,12 @@ body {
 }
 
 @layer base {
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-bold;
   }
 
@@ -37,43 +42,43 @@ body {
 
 @layer components {
   .container {
-    @apply max-w-7xl mx-auto;
+    @apply mx-auto max-w-7xl;
   }
-  
+
   .btn {
     @apply inline-block rounded-md font-medium transition;
   }
-  
+
   .btn-primary {
-    @apply bg-red-600 hover:bg-red-700 text-white px-4 py-2;
+    @apply bg-red-600 px-4 py-2 text-white hover:bg-red-700;
   }
-  
+
   .btn-secondary {
-    @apply bg-gray-800 hover:bg-gray-700 text-white px-4 py-2;
+    @apply bg-gray-800 px-4 py-2 text-white hover:bg-gray-700;
   }
-  
+
   .card {
-    @apply bg-gray-900 rounded-lg overflow-hidden transition-transform hover:scale-105 duration-300;
+    @apply overflow-hidden rounded-lg bg-gray-900 transition-transform duration-300 hover:scale-105;
   }
-  
+
   .card-title {
-    @apply text-xl font-bold mb-2;
+    @apply mb-2 text-xl font-bold;
   }
-  
+
   .card-content {
     @apply p-4;
   }
-  
+
   .tag {
-    @apply inline-block bg-red-600 px-2 py-1 text-xs font-semibold uppercase tracking-wider rounded text-white;
+    @apply inline-block rounded bg-red-600 px-2 py-1 text-xs font-semibold uppercase tracking-wider text-white;
   }
-  
+
   .nav-link {
-    @apply text-gray-300 hover:text-white font-medium;
+    @apply font-medium text-gray-300 hover:text-white;
   }
-  
+
   .nav-link-active {
-    @apply text-red-500 font-medium;
+    @apply font-medium text-red-500;
   }
 }
 

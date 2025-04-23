@@ -11,7 +11,7 @@ export default function ContactPage() {
           <p className="text-xl text-gray-400 mb-12">
             Interested in training opportunities or business inquiries? Get in touch below.
           </p>
-          
+
           {/* Contact Form */}
           <form className="space-y-6">
             <div>
@@ -26,7 +26,7 @@ export default function ContactPage() {
                 placeholder="Your name"
               />
             </div>
-            
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
                 Email Address
@@ -39,7 +39,7 @@ export default function ContactPage() {
                 placeholder="you@example.com"
               />
             </div>
-            
+
             <div>
               <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-2">
                 Subject
@@ -56,7 +56,7 @@ export default function ContactPage() {
                 <option value="other">Other</option>
               </select>
             </div>
-            
+
             <div>
               <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
                 Message
@@ -69,7 +69,7 @@ export default function ContactPage() {
                 placeholder="Your message..."
               ></textarea>
             </div>
-            
+
             <div>
               <button
                 type="submit"
@@ -79,17 +79,20 @@ export default function ContactPage() {
               </button>
             </div>
           </form>
-          
+
           {/* Contact Information */}
           <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="bg-gray-900 p-8 rounded-lg">
               <h3 className="text-xl font-bold mb-4">Business Inquiries</h3>
               <p className="text-gray-400 mb-2">For business and sponsorship opportunities</p>
-              <a href="mailto:business@chrisbrickley.com" className="text-red-500 hover:text-red-400">
+              <a
+                href="mailto:business@chrisbrickley.com"
+                className="text-red-500 hover:text-red-400"
+              >
                 business@chrisbrickley.com
               </a>
             </div>
-            
+
             <div className="bg-gray-900 p-8 rounded-lg">
               <h3 className="text-xl font-bold mb-4">Media & Press</h3>
               <p className="text-gray-400 mb-2">For media requests and interviews</p>

@@ -1,9 +1,8 @@
-import { createClient } from 'next-sanity'
 import imageUrlBuilder from '@sanity/image-url'
-import { SanityImageSource } from '@sanity/image-url/lib/types/types'
-
+import {SanityImageSource} from '@sanity/image-url/lib/types/types'
+import {createClient} from 'next-sanity'
 // Import your Sanity client configuration
-import { client } from './sanity'
+import {client} from './sanity'
 
 // Create an image URL builder using the Sanity client
 const builder = imageUrlBuilder(client)

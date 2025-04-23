@@ -1,9 +1,9 @@
-import { groq } from 'next-sanity';
-import { client } from './sanity';
+import {groq} from 'next-sanity'
+import {client} from './sanity'
 
 // Type definitions
 interface SearchParams {
-  searchTerm: string;
+  searchTerm: string
 }
 
 // Blog queries
@@ -18,7 +18,7 @@ export const allBlogPostsQuery = groq`
     publishedAt,
     categories[]->{ title }
   }
-`;
+`
 
 export const blogPostBySlugQuery = groq`
   *[_type == "post" && slug.current == $slug][0] {
@@ -34,7 +34,7 @@ export const blogPostBySlugQuery = groq`
       image
     }
   }
-`;
+`
 
 /**
  * Fetch all posts with pagination
@@ -49,9 +49,9 @@ export const getAllPosts = async (limit = 10, skip = 0) => {
       mainImage,
       publishedAt,
       "categories": categories[]->title
-    }`
-  );
-};
+    }`,
+  )
+}
 
 /**
  * Fetch a single post by slug
@@ -68,9 +68,9 @@ export const getPostBySlug = async (slug: string) => {
       "author": author->{name, image},
       "categories": categories[]->title
     }`,
-    { slug }
-  );
-};
+    {slug},
+  )
+}
 
 // Gallery queries
 export const allGalleriesQuery = groq`
@@ -83,7 +83,7 @@ export const allGalleriesQuery = groq`
     coverImage,
     publishedAt
   }
-`;
+`
 
 export const galleryBySlugQuery = groq`
   *[_type == "photoGallery" && slug.current == $slug][0] {
@@ -106,7 +106,7 @@ export const galleryBySlugQuery = groq`
     },
     publishedAt
   }
-`;
+`
 
 /**
  * Fetch gallery images
@@ -118,9 +118,9 @@ export const getGalleryImages = async (limit = 20, skip = 0) => {
       title,
       image,
       publishedAt
-    }`
-  );
-};
+    }`,
+  )
+}
 
 // Video queries
 export const allVideosQuery = groq`
@@ -136,7 +136,7 @@ export const allVideosQuery = groq`
     publishedAt,
     categories[]->{ title }
   }
-`;
+`
 
 export const videoBySlugQuery = groq`
   *[_type == "video" && slug.current == $slug][0] {
@@ -157,7 +157,7 @@ export const videoBySlugQuery = groq`
       duration
     }
   }
-`;
+`
 
 /**
  * Fetch all videos with pagination
@@ -173,9 +173,9 @@ export const getAllVideos = async (limit = 10, skip = 0) => {
       thumbnailImage,
       publishedAt,
       "categories": categories[]->title
-    }`
-  );
-};
+    }`,
+  )
+}
 
 /**
  * Fetch a single video by slug
@@ -192,9 +192,9 @@ export const getVideoBySlug = async (slug: string) => {
       publishedAt,
       "relatedVideos": relatedVideos[]->
     }`,
-    { slug }
-  );
-};
+    {slug},
+  )
+}
 
 // Search query
 export const searchQuery = groq`
@@ -228,12 +228,12 @@ export const searchQuery = groq`
       publishedAt
     }
   }
-`;
+`
 
 /**
  * Search for content matching a query string
  */
 export const performSearch = async (searchTerm: string) => {
-  const params: { searchTerm: string } = { searchTerm: `*${searchTerm}*` };
-  return client.fetch(searchQuery, params);
-};
+  const params: {searchTerm: string} = {searchTerm: `*${searchTerm}*`}
+  return client.fetch(searchQuery, params)
+}

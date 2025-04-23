@@ -1,28 +1,28 @@
 'use client'
 
-import { useState } from 'react'
+import {urlForImage} from '@/lib/sanity'
+import {SanityImageSource} from '@sanity/image-url/lib/types/types'
 import Image from 'next/image'
-import { urlForImage } from '@/lib/sanity'
-import { SanityImageSource } from '@sanity/image-url/lib/types/types'
+import {useState} from 'react'
 
 // Define interface for gallery images
 interface GalleryImage {
-  _key?: string;
+  _key?: string
   asset?: {
-    _id: string;
-    [key: string]: any;
-  };
-  alt?: string;
-  caption?: string;
-  [key: string]: any;
+    _id: string
+    [key: string]: any
+  }
+  alt?: string
+  caption?: string
+  [key: string]: any
 }
 
 // Define props interface
 interface GalleryViewerProps {
-  images?: GalleryImage[] | null;
+  images?: GalleryImage[] | null
 }
 
-export default function GalleryViewer({ images }: GalleryViewerProps) {
+export default function GalleryViewer({images}: GalleryViewerProps) {
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
 
   // Add data validation
@@ -46,11 +46,12 @@ export default function GalleryViewer({ images }: GalleryViewerProps) {
 
   const navigateImage = (direction: 'next' | 'prev') => {
     if (selectedImage === null) return
-    
-    const newIndex = direction === 'next' 
-      ? (selectedImage + 1) % images.length
-      : (selectedImage - 1 + images.length) % images.length
-    
+
+    const newIndex =
+      direction === 'next'
+        ? (selectedImage + 1) % images.length
+        : (selectedImage - 1 + images.length) % images.length
+
     setSelectedImage(newIndex)
   }
 
@@ -65,7 +66,7 @@ export default function GalleryViewer({ images }: GalleryViewerProps) {
       {/* Gallery Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {images.map((image, index) => (
-          <div 
+          <div
             key={image?.asset?._id || index}
             className="relative aspect-square overflow-hidden rounded-lg cursor-pointer"
             onClick={() => openLightbox(index)}
@@ -88,17 +89,25 @@ export default function GalleryViewer({ images }: GalleryViewerProps) {
 
       {/* Lightbox */}
       {selectedImage !== null && images[selectedImage]?.asset && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4" onClick={closeLightbox}>
-          <button 
+        <div
+          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
+          onClick={closeLightbox}
+        >
+          <button
             className="absolute top-6 right-6 text-white hover:text-red-500"
             onClick={closeLightbox}
           >
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
-          
-          <button 
+
+          <button
             className="absolute left-6 top-1/2 transform -translate-y-1/2 text-white hover:text-red-500"
             onClick={(e) => {
               e.stopPropagation()
@@ -106,10 +115,15 @@ export default function GalleryViewer({ images }: GalleryViewerProps) {
             }}
           >
             <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
-          
+
           <div className="relative w-full h-[80vh] max-w-5xl" onClick={(e) => e.stopPropagation()}>
             <Image
               src={getImageUrl(images[selectedImage])}
@@ -118,8 +132,8 @@ export default function GalleryViewer({ images }: GalleryViewerProps) {
               className="object-contain"
             />
           </div>
-          
-          <button 
+
+          <button
             className="absolute right-6 top-1/2 transform -translate-y-1/2 text-white hover:text-red-500"
             onClick={(e) => {
               e.stopPropagation()
@@ -130,7 +144,7 @@ export default function GalleryViewer({ images }: GalleryViewerProps) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
             </svg>
           </button>
-          
+
           {images[selectedImage].caption && (
             <div className="absolute bottom-8 left-0 right-0 text-center">
               <p className="text-white text-lg">{images[selectedImage].caption}</p>

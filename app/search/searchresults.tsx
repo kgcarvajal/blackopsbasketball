@@ -1,61 +1,61 @@
+import {urlForImage} from '@/lib/image' // Updated import path
+import {searchQuery} from '@/lib/queries'
+import {client} from '@/lib/sanity'
 import Image from 'next/image'
 import Link from 'next/link'
-import { client } from '@/lib/sanity'
-import { urlForImage } from '@/lib/image' // Updated import path
-import { searchQuery } from '@/lib/queries'
 
 // Define TypeScript interfaces for search results
 interface Video {
-  _id: string;
-  title: string;
+  _id: string
+  title: string
   slug: {
-    current: string;
-  };
-  excerpt?: string;
-  thumbnail?: any;
+    current: string
+  }
+  excerpt?: string
+  thumbnail?: any
 }
 
 interface Blog {
-  _id: string;
-  title: string;
+  _id: string
+  title: string
   slug: {
-    current: string;
-  };
-  excerpt?: string;
-  mainImage?: any;
+    current: string
+  }
+  excerpt?: string
+  mainImage?: any
 }
 
 interface Gallery {
-  _id: string;
-  title: string;
+  _id: string
+  title: string
   slug: {
-    current: string;
-  };
-  coverImage?: any;
+    current: string
+  }
+  coverImage?: any
 }
 
 interface SearchResult {
-  videos: Video[];
-  blogs: Blog[];
-  galleries: Gallery[];
+  videos: Video[]
+  blogs: Blog[]
+  galleries: Gallery[]
 }
 
 async function getSearchResults(searchTerm: string): Promise<SearchResult> {
   // Add wildcards to make the search more flexible
   const wildcard = `*${searchTerm}*`
   try {
-    return await client.fetch<SearchResult>(searchQuery, { searchTerm: wildcard })
+    return await client.fetch<SearchResult>(searchQuery, {searchTerm: wildcard})
   } catch (error) {
     console.error('Search error:', error)
     // Return empty results in case of error
-    return { videos: [], blogs: [], galleries: [] }
+    return {videos: [], blogs: [], galleries: []}
   }
 }
 
-export default async function SearchResults({ searchTerm }: { searchTerm: string }) {
-  const { videos, blogs, galleries } = await getSearchResults(searchTerm)
+export default async function SearchResults({searchTerm}: {searchTerm: string}) {
+  const {videos, blogs, galleries} = await getSearchResults(searchTerm)
   const totalResults = videos.length + blogs.length + galleries.length
-  
+
   if (totalResults === 0) {
     return (
       <div className="text-center text-gray-400 py-16">
@@ -64,34 +64,54 @@ export default async function SearchResults({ searchTerm }: { searchTerm: string
       </div>
     )
   }
-  
+
   return (
     <div>
       <p className="mb-8 text-gray-400">
         Found {totalResults} result{totalResults !== 1 ? 's' : ''} for &quot;{searchTerm}&quot;
       </p>
-      
+
       {/* Videos Results */}
       {videos.length > 0 && (
         <div className="mb-12">
           <h2 className="text-2xl font-bold mb-6">Videos ({videos.length})</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {videos.map((video) => (
-              <div key={video._id} className="bg-gray-900 rounded-lg overflow-hidden group hover:bg-gray-800 transition">
+              <div
+                key={video._id}
+                className="bg-gray-900 rounded-lg overflow-hidden group hover:bg-gray-800 transition"
+              >
                 <Link href={`/videos/${video.slug.current}`}>
                   <div className="relative aspect-video">
                     {video.thumbnail ? (
                       <Image
-                        src={video.thumbnail ? urlForImage(video.thumbnail).url() : '/placeholder.jpg'}
+                        src={
+                          video.thumbnail ? urlForImage(video.thumbnail).url() : '/placeholder.jpg'
+                        }
                         alt={video.title}
                         fill
                         className="object-cover"
                       />
                     ) : (
                       <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
-                        <svg className="w-16 h-16 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <svg
+                          className="w-16 h-16 text-gray-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
                         </svg>
                       </div>
                     )}
@@ -110,27 +130,42 @@ export default async function SearchResults({ searchTerm }: { searchTerm: string
           </div>
         </div>
       )}
-      
+
       {/* Blog Results */}
       {blogs.length > 0 && (
         <div className="mb-12">
           <h2 className="text-2xl font-bold mb-6">Articles ({blogs.length})</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {blogs.map((blog) => (
-              <div key={blog._id} className="bg-gray-900 rounded-lg overflow-hidden group hover:bg-gray-800 transition">
+              <div
+                key={blog._id}
+                className="bg-gray-900 rounded-lg overflow-hidden group hover:bg-gray-800 transition"
+              >
                 <Link href={`/blog/${blog.slug.current}`}>
                   <div className="relative h-48">
                     {blog.mainImage ? (
                       <Image
-                        src={blog.mainImage ? urlForImage(blog.mainImage).url() : '/placeholder.jpg'}
+                        src={
+                          blog.mainImage ? urlForImage(blog.mainImage).url() : '/placeholder.jpg'
+                        }
                         alt={blog.title}
                         fill
                         className="object-cover"
                       />
                     ) : (
                       <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
-                        <svg className="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                        <svg
+                          className="w-12 h-12 text-gray-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
+                          />
                         </svg>
                       </div>
                     )}
@@ -149,29 +184,43 @@ export default async function SearchResults({ searchTerm }: { searchTerm: string
           </div>
         </div>
       )}
-      
+
       {/* Gallery Results */}
       {galleries.length > 0 && (
         <div>
           <h2 className="text-2xl font-bold mb-6">Galleries ({galleries.length})</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {galleries.map((gallery) => (
-              <Link 
+              <Link
                 key={gallery._id}
                 href={`/gallery/${gallery.slug.current}`}
                 className="relative group overflow-hidden rounded-lg aspect-square"
               >
                 {gallery.coverImage ? (
                   <Image
-                    src={gallery.coverImage ? urlForImage(gallery.coverImage).url() : '/placeholder.jpg'}
+                    src={
+                      gallery.coverImage
+                        ? urlForImage(gallery.coverImage).url()
+                        : '/placeholder.jpg'
+                    }
                     alt={gallery.title}
                     fill
                     className="object-cover group-hover:scale-110 transition duration-300"
                   />
                 ) : (
                   <div className="absolute inset-0 bg-gray-800 flex items-center justify-center group-hover:scale-110 transition duration-300">
-                    <svg className="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <svg
+                      className="w-12 h-12 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
                     </svg>
                   </div>
                 )}
